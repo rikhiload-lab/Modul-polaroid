@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polaroid Studio 32x48 cm (Grid 5x5)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Caveat:wght@600&family=Playfair+Display:wght@600&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .font-handwriting { font-family: 'Caveat', cursive; }
+        .font-serif-custom { font-family: 'Playfair Display', serif; }
+        
+        .checkerboard {
+            background-image: linear-gradient(45deg, #1e293b 25%, transparent 25%), 
+                              linear-gradient(-45deg, #1e293b 25%, transparent 25%), 
+                              linear-gradient(45deg, transparent 75%, #1e293b 75%), 
+                              linear-gradient(-45deg, transparent 75%, #1e293b 75%);
+            background-size: 24px 24px;
+            background-position: 0 0, 0 12px, 12px -12px, -12px 0px;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
+
+    <!-- Header Navigation -->
+    <header class="bg-slate-900 border-b border-slate-800 px-6 py-3.5 flex flex-wrap justify-between items-center shadow-lg sticky top-0 z-40">
+        <div class="flex items-center gap-3">
+            <div class="bg-indigo-600 p-2 rounded-xl text-white shadow-md shadow-indigo-600/30">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            </div>
+            <div>
+                <div class="flex items-center gap-2">
+                    <h1 class="text-base font-bold text-white">Polaroid Studio 32x48</h1>
+                    <span class="bg-indigo-950 text-indigo-400 border border-indigo-800 text-[10px] font-semibold px-2 py-0.5 rounded-md">A3+ Grid 5x5</span>
+                </div>
+                <p class="text-[11px] text-slate-400">Ukuran Polaroid 6x9 cm (Inner Foto 5x7 cm) • Cetak Super A3 (32 × 48 cm)</p>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-2.5 mt-2 sm:mt-0">
+            <button onclick="loadSampleImages()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shadow-sm">
+                <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                Isi Sample Foto
+            </button>
+            <button onclick="clearAllSlots()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                Kosongkan
+            </button>
+            <button onclick="downloadHighRes()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-lg shadow-indigo-600/30 transition flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                Download 300 DPI
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <div class="flex-1 flex flex-col lg:flex-row overflow-hidden">
+        
+        <!-- Sidebar Controls -->
+        <aside class="w-full lg:w-80 bg-slate-900 border-r border-slate-800 p-5 flex flex-col gap-5 overflow-y-auto max-h-[calc(100vh-65px)]">
+            
+            <!-- Upload Section -->
+            <div>
+                <div class="flex justify-between items-center mb-2">
+                    <label class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                        <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        Upload Massal
+                    </label>
+                    <span class="text-[10px] font-bold text-indigo-400 bg-indigo-950 border border-indigo-800/80 px-2 py-0.5 rounded-full"><span id="filledCount">0</span>/25 Slot</span>
+                </div>
+                <label class="border-2 border-dashed border-slate-700 hover:border-indigo-500 rounded-2xl p-5 flex flex-col items-center justify-center cursor-pointer bg-slate-950/60 transition group text-center">
+                    <div class="bg-slate-800 p-2.5 rounded-full mb-2 group-hover:scale-110 transition">
+                        <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    </div>
+                    <span class="text-xs font-bold text-slate-200">Klik atau Drag & Drop Foto</span>
+                    <span class="text-[10px] text-slate-400 mt-1">Dapat memilih hingga 25 foto sekaligus</span>
+                    <input type="file" id="fileInput" multiple accept="image/*" class="hidden" onchange="handleFiles(this.files)">
+                </label>
+            </div>
+
+            <!-- Settings Section -->
+            <div class="space-y-4">
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Pengaturan Cetak</h3>
+                
+                <!-- Crop Marks Toggle -->
+                <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-3.5 flex items-center justify-between">
+                    <div>
+                        <div class="text-xs font-bold text-slate-200">Garis Potong (Crop Grid)</div>
+                        <div class="text-[10px] text-slate-400">Garis abu-abu tipis pembatas potong</div>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="showCropMarks" checked onchange="drawCanvas()" class="sr-only peer">
+                        <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+                    </label>
+                </div>
+
+                <!-- Global Frame Color -->
+                <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-3.5 space-y-3">
+                    <div class="text-xs font-bold text-slate-200">Warna Bingkai Massal</div>
+                    <div class="grid grid-cols-6 gap-2">
+                        <button onclick="setGlobalFrame('#FFFFFF')" class="aspect-square rounded-lg bg-white border-2 border-slate-600 hover:scale-105 transition" title="Putih Klasik"></button>
+                        <button onclick="setGlobalFrame('#0F172A')" class="aspect-square rounded-lg bg-slate-900 border border-slate-700 hover:scale-105 transition" title="Hitam"></button>
+                        <button onclick="setGlobalFrame('#FDF2F8')" class="aspect-square rounded-lg bg-pink-100 hover:scale-105 transition" title="Pastel Pink"></button>
+                        <button onclick="setGlobalFrame('#EFF6FF')" class="aspect-square rounded-lg bg-blue-100 hover:scale-105 transition" title="Pastel Blue"></button>
+                        <button onclick="setGlobalFrame('#ECFDF5')" class="aspect-square rounded-lg bg-emerald-100 hover:scale-105 transition" title="Pastel Mint"></button>
+                        <button onclick="setGlobalFrame('#FFFBEB')" class="aspect-square rounded-lg bg-amber-50 hover:scale-105 transition" title="Warm Cream"></button>
+                    </div>
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- Preview Sheet Workspace -->
+        <main class="flex-1 checkerboard p-6 flex items-center justify-center overflow-auto relative">
+            <div class="relative shadow-2xl bg-white border border-slate-700 transition-all duration-300 rounded-sm" id="canvasContainer">
+                <canvas id="polaroidCanvas" class="max-w-full max-h-[82vh] object-contain block cursor-pointer" onclick="handleCanvasClick(event)"></canvas>
+            </div>
+        </main>
+
+    </div>
+
+    <!-- Modal Editor Lengkap (Full & Scrollable) -->
+    <div id="editModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+            
+            <!-- Modal Header (Fixed) -->
+            <div class="flex justify-between items-center border-b border-slate-800 px-6 py-4 bg-slate-900 shrink-0">
+                <div class="flex items-center gap-2">
+                    <span class="bg-indigo-600 text-white text-xs font-bold px-3 py-1 rounded-lg">Slot <span id="modalSlotNum">1</span></span>
+                    <h3 class="font-bold text-base text-slate-100">Editor Polaroid Presisi Foto</h3>
+                </div>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-white text-2xl font-bold">&times;</button>
+            </div>
+            
+            <!-- Modal Body (Scrollable) -->
+            <div class="p-6 overflow-y-auto space-y-6 flex-1">
+                
+                <!-- 1. Mode Penyesuaian Foto (Fit / Fill) & Zoom -->
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-4">
+                    <h4 class="text-xs font-bold text-indigo-400 uppercase tracking-wider">1. Penyesuaian Foto Ke Bingkai 5x7 cm</h4>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-xs font-semibold text-slate-300 block mb-2">Mode Tampilan Foto</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button id="btnModeCover" onclick="setFitMode('cover')" class="bg-indigo-600 text-white py-2 px-3 rounded-lg text-xs font-semibold border border-indigo-500 transition">Penuhi Frame (Crop)</button>
+                                <button id="btnModeContain" onclick="setFitMode('contain')" class="bg-slate-800 text-slate-300 hover:bg-slate-700 py-2 px-3 rounded-lg text-xs font-semibold border border-slate-700 transition">Utuh (Fit 1:1 / Full)</button>
+                            </div>
+                            <p class="text-[10px] text-slate-400 mt-1.5">Gunakan mode <strong>Utuh</strong> agar foto 1:1 atau rasio lanskap bisa masuk tanpa terpotong.</p>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="text-xs font-semibold text-slate-300">Pengatur Zoom Gambar</label>
+                                <span id="zoomVal" class="text-xs font-mono font-bold text-indigo-400">0%</span>
+                            </div>
+                            <input type="range" id="modalZoomRange" min="0" max="100" value="0" oninput="onZoomChange(this.value)" class="w-full accent-indigo-500 cursor-pointer mt-2">
+                            <p class="text-[10px] text-slate-500 mt-1">Mengatur perbesaran foto secara manual.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Fitur Rotasi Foto -->
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
+                    <h4 class="text-xs font-bold text-indigo-400 uppercase tracking-wider">2. Rotasi Gambar</h4>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <div class="flex gap-2">
+                            <button onclick="setRotation(0)" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg text-xs font-semibold border border-slate-700">0°</button>
+                            <button onclick="setRotation(90)" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg text-xs font-semibold border border-slate-700">90°</button>
+                            <button onclick="setRotation(180)" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg text-xs font-semibold border border-slate-700">180°</button>
+                            <button onclick="setRotation(270)" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg text-xs font-semibold border border-slate-700">270°</button>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <label class="text-xs text-slate-400">Manual (°):</label>
+                            <input type="number" id="modalRotateInput" min="0" max="360" value="0" oninput="onRotateChange(this.value)" class="w-20 bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-xs text-white">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Teks Atas (Header ~14pt) & Caption Bawah -->
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-4">
+                    <h4 class="text-xs font-bold text-indigo-400 uppercase tracking-wider">3. Pengaturan Teks (Atas & Bawah)</h4>
+                    
+                    <!-- Header Text (Atas ~14pt) -->
+                    <div>
+                        <label class="text-xs font-semibold text-slate-300 block mb-1">Teks Keterangan Atas (Header Kecil ~14pt)</label>
+                        <input type="text" id="modalHeaderText" placeholder="Contoh: FLS2N SD 2024 / Gayam" oninput="onHeaderTextChange(this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2 text-xs text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    </div>
+
+                    <!-- Caption Bawah -->
+                    <div>
+                        <label class="text-xs font-semibold text-slate-300 block mb-1">Teks Caption Bawah (Utama)</label>
+                        <input type="text" id="modalCaptionInput" placeholder="Ketik caption utama di sini..." oninput="onCaptionChange(this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2 text-xs text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+                        <div>
+                            <label class="text-[10px] text-slate-400 block mb-1">Gaya Font Teks</label>
+                            <select id="modalFontFamily" onchange="onFontFamilyChange(this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200">
+                                <option value="font-handwriting">Tulisan Tangan (Caveat)</option>
+                                <option value="font-sans">Modern Sans-Serif</option>
+                                <option value="font-serif">Klasik Serif</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-slate-400 block mb-1">Warna Teks</label>
+                            <input type="color" id="modalTextColor" value="#1E293B" onchange="onTextColorChange(this.value)" class="w-full h-8 rounded border border-slate-700 bg-slate-900 cursor-pointer">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Warna Bingkai Per Foto -->
+                <div class="flex items-center justify-between bg-slate-950 p-4 rounded-xl border border-slate-800">
+                    <span class="text-xs font-semibold text-slate-300">Warna Bingkai Slot Ini</span>
+                    <input type="color" id="modalFrameColor" value="#FFFFFF" onchange="onFrameColorChange(this.value)" class="w-9 h-9 rounded border border-slate-700 bg-transparent cursor-pointer">
+                </div>
+
+            </div>
+
+            <!-- Modal Footer Actions (Fixed) -->
+            <div class="flex gap-3 px-6 py-4 bg-slate-900 border-t border-slate-800 shrink-0">
+                <button onclick="clearCurrentSlot()" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 px-5 py-2.5 rounded-xl text-xs font-semibold transition">Hapus Foto</button>
+                <button onclick="closeModal()" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white py-2.5 rounded-xl text-xs font-bold shadow-lg shadow-indigo-600/30 transition">Selesai & Simpan</button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Script Logika Canvas -->
+    <script>
+        const CANVAS_WIDTH = 3780;
+        const CANVAS_HEIGHT = 5669;
+
+        const COLS = 5;
+        const ROWS = 5;
+
+        const ITEM_W = 708;  // 6 cm
+        const ITEM_H = 1063; // 9 cm
+
+        const START_X = 120;
+        const START_Y = 177;
+
+        // Area Inner Foto 5x7 cm (591 x 827 px)
+        const INNER_W = 591; 
+        const INNER_H = 827; 
+        const MARGIN_INNER_X = (ITEM_W - INNER_W) / 2;
+        const MARGIN_INNER_Y = 70; // Menyediakan sedikit ruang atas untuk header text 14pt
+
+        // State 25 Slot Data
+        let slots = new Array(25).fill(null).map(() => ({
+            image: null,
+            fitMode: 'cover', // 'cover' atau 'contain'
+            zoom: 0,
+            rotation: 0,
+            headerText: '',
+            caption: '',
+            font: 'font-handwriting',
+            textColor: '#1E293B',
+            frameColor: '#FFFFFF'
+        }));
+
+        let activeEditIndex = null;
+        const canvas = document.getElementById('polaroidCanvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = CANVAS_WIDTH;
+        canvas.height = CANVAS_HEIGHT;
+
+        window.onload = () => {
+            drawCanvas();
+            updateCount();
+        };
+
+        function setGlobalFrame(color) {
+            slots.forEach(slot => slot.frameColor = color);
+            drawCanvas();
+        }
+
+        function updateCount() {
+            let filled = slots.filter(s => s.image !== null).length;
+            document.getElementById('filledCount').innerText = filled;
+        }
+
+        function handleFiles(files) {
+            let currentSlotIndex = slots.findIndex(s => s.image === null);
+            if (currentSlotIndex === -1) currentSlotIndex = 0;
+
+            for (let i = 0; i < files.length; i++) {
+                if (currentSlotIndex >= 25) break;
+                let file = files[i];
+                let reader = new FileReader();
+                
+                let targetSlot = currentSlotIndex;
+                reader.onload = function(e) {
+                    let img = new Image();
+                    img.onload = function() {
+                        slots[targetSlot].image = img;
+                        slots[targetSlot].zoom = 0;
+                        slots[targetSlot].rotation = 0;
+                        slots[targetSlot].fitMode = 'cover';
+                        drawCanvas();
+                        updateCount();
+                    }
+                    img.src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+                currentSlotIndex++;
+            }
+        }
+
+        function loadSampleImages() {
+            for (let i = 0; i < 25; i++) {
+                let img = new Image();
+                img.crossOrigin = "anonymous";
+                img.src = `https://picsum.photos/seed/polaroid${i+1}/600/800`;
+                slots[i].image = img;
+                slots[i].zoom = 0;
+                slots[i].rotation = 0;
+                slots[i].caption = `Memory #${i+1}`;
+            }
+            setTimeout(() => {
+                drawCanvas();
+                updateCount();
+            }, 1000);
+        }
+
+        function clearAllSlots() {
+            slots.forEach(s => {
+                s.image = null;
+                s.zoom = 0;
+                s.rotation = 0;
+                s.headerText = '';
+                s.caption = '';
+            });
+            drawCanvas();
+            updateCount();
+        }
+
+        function handleCanvasClick(event) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = CANVAS_WIDTH / rect.width;
+            const scaleY = CANVAS_HEIGHT / rect.height;
+
+            const clickX = (event.clientX - rect.left) * scaleX;
+            const clickY = (event.clientY - rect.top) * scaleY;
+
+            for (let i = 0; i < 25; i++) {
+                const row = Math.floor(i / COLS);
+                const col = i % COLS;
+
+                const x = START_X + (col * ITEM_W);
+                const y = START_Y + (row * ITEM_H);
+
+                if (clickX >= x && clickX <= x + ITEM_W && clickY >= y && clickY <= y + ITEM_H) {
+                    if (slots[i].image) {
+                        openModal(i);
+                    } else {
+                        document.getElementById('fileInput').click();
+                    }
+                    break;
+                }
+            }
+        }
+
+        function openModal(index) {
+            activeEditIndex = index;
+            document.getElementById('modalSlotNum').innerText = index + 1;
+            document.getElementById('modalZoomRange').value = slots[index].zoom;
+            document.getElementById('zoomVal').innerText = slots[index].zoom + "%";
+            document.getElementById('modalRotateInput').value = slots[index].rotation;
+            document.getElementById('modalHeaderText').value = slots[index].headerText;
+            document.getElementById('modalCaptionInput').value = slots[index].caption;
+            document.getElementById('modalFontFamily').value = slots[index].font;
+            document.getElementById('modalTextColor').value = slots[index].textColor;
+            document.getElementById('modalFrameColor').value = slots[index].frameColor;
+            
+            updateFitButtons(slots[index].fitMode);
+            document.getElementById('editModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').classList.add('hidden');
+            activeEditIndex = null;
+        }
+
+        function setFitMode(mode) {
+            if (activeEditIndex !== null) {
+                slots[activeEditIndex].fitMode = mode;
+                updateFitButtons(mode);
+                drawCanvas();
+            }
+        }
+
+        function updateFitButtons(mode) {
+            const btnCover = document.getElementById('btnModeCover');
+            const btnContain = document.getElementById('btnModeContain');
+            if (mode === 'cover') {
+                btnCover.className = "bg-indigo-600 text-white py-2 px-3 rounded-lg text-xs font-semibold border border-indigo-500 transition";
+                btnContain.className = "bg-slate-800 text-slate-300 hover:bg-slate-700 py-2 px-3 rounded-lg text-xs font-semibold border border-slate-700 transition";
+            } else {
+                btnContain.className = "bg-indigo-600 text-white py-2 px-3 rounded-lg text-xs font-semibold border border-indigo-500 transition";
+                btnCover.className = "bg-slate-800 text-slate-300 hover:bg-slate-700 py-2 px-3 rounded-lg text-xs font-semibold border border-slate-700 transition";
+            }
+        }
+
+        function onZoomChange(val) {
+            if (activeEditIndex !== null) {
+                slots[activeEditIndex].zoom = parseInt(val);
+                document.getElementById('zoomVal').innerText = val + "%";
+                drawCanvas();
+            }
+        }
+
+        function setRotation(deg) {
+            if (activeEditIndex !== null) {
+                slots[activeEditIndex].rotation = deg;
+                document.getElementById('modalRotateInput').value = deg;
+                drawCanvas();
+            }
+        }
+
+        function onRotateChange(val) {
+            if (activeEditIndex !== null) {
+                slots[activeEditIndex].rotation = parseInt(val) || 0;
+                drawCanvas();
+            }
+        }
+
+        function onHeaderTextChange(val) {
+            if (activeEditIndex !== null) {
+                slots[activeEditIndex].headerText = val;
+                drawCanvas();
+            }
+        }
+
+        function onCaptionChange(val) {
+            if (activeEditIndex !== null) {
+                slots[activeEditIndex].caption = val;
+                drawCanvas();
+            }
+        }
+
+        function onFontFamilyChange(val) {
+            if (activeEditIndex !== null) {
+                slots[activeEditIndex].font = val;
+                drawCanvas();
+            }
+        }
+
+        function onTextColorChange(val) {
+            if (activeEditIndex !== null) {
+                slots[activeEditIndex].textColor = val;
+                drawCanvas();
+            }
+        }
+
+        function onFrameColorChange(val) {
+            if (activeEditIndex !== null) {
+                slots[activeEditIndex].frameColor = val;
+                drawCanvas();
+            }
+        }
+
+        function clearCurrentSlot() {
+            if (activeEditIndex !== null) {
+                slots[activeEditIndex] = {
+                    image: null, fitMode: 'cover', zoom: 0, rotation: 0,
+                    headerText: '', caption: '', font: 'font-handwriting',
+                    textColor: '#1E293B', frameColor: '#FFFFFF'
+                };
+                drawCanvas();
+                updateCount();
+                closeModal();
+            }
+        }
+
+        function drawCanvas() {
+            ctx.fillStyle = "#FFFFFF";
+            ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+            const showCrop = document.getElementById('showCropMarks').checked;
+
+            slots.forEach((item, index) => {
+                const row = Math.floor(index / COLS);
+                const col = index % COLS;
+
+                const x = START_X + (col * ITEM_W);
+                const y = START_Y + (row * ITEM_H);
+
+                // Frame
+                ctx.fillStyle = item.frameColor || "#FFFFFF";
+                ctx.fillRect(x, y, ITEM_W, ITEM_H);
+
+                // Render Header Text (Atas ~14pt)
+                if (item.headerText) {
+                    ctx.fillStyle = item.textColor || "#64748B";
+                    ctx.font = "bold 18px sans-serif"; // Ukuran ~14pt presisi cetak
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
+                    ctx.fillText(item.headerText, x + ITEM_W / 2, y + 40);
+                }
+
+                // Render Foto Inner Area 5x7 cm
+                if (item.image) {
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.rect(x + MARGIN_INNER_X, y + MARGIN_INNER_Y, INNER_W, INNER_H);
+                    ctx.clip();
+
+                    let img = item.image;
+                    let centerX = x + MARGIN_INNER_X + INNER_W / 2;
+                    let centerY = y + MARGIN_INNER_Y + INNER_H / 2;
+
+                    ctx.translate(centerX, centerY);
+                    ctx.rotate((item.rotation * Math.PI) / 180);
+
+                    let zoomFactor = 1 + (item.zoom / 100) * 1.5;
+                    let imgW = img.width;
+                    let imgH = img.height;
+
+                    // Swap width/height untuk rotasi 90 / 270 deg
+                    if (item.rotation % 180 !== 0) {
+                        let temp = imgW;
+                        imgW = imgH;
+                        imgH = temp;
+                    }
+
+                    let scale;
+                    if (item.fitMode === 'contain') {
+                        scale = Math.min(INNER_W / imgW, INNER_H / imgH) * zoomFactor;
+                    } else {
+                        scale = Math.max(INNER_W / imgW, INNER_H / imgH) * zoomFactor;
+                    }
+
+                    let drawW = img.width * scale;
+                    let drawH = img.height * scale;
+
+                    ctx.drawImage(img, -drawW / 2, -drawH / 2, drawW, drawH);
+                    ctx.restore();
+
+                    // Render Caption Bawah
+                    if (item.caption) {
+                        ctx.fillStyle = item.textColor || "#1E293B";
+                        
+                        if (item.font === 'font-handwriting') {
+                            ctx.font = "bold 44px 'Caveat', cursive";
+                        } else if (item.font === 'font-serif') {
+                            ctx.font = "bold 26px 'Playfair Display', serif";
+                        } else {
+                            ctx.font = "bold 24px sans-serif";
+                        }
+
+                        ctx.textAlign = "center";
+                        ctx.textBaseline = "middle";
+                        ctx.fillText(item.caption, x + ITEM_W / 2, y + ITEM_H - 80);
+                    }
+                } else {
+                    // Placeholder Empty Slot
+                    ctx.fillStyle = "#F8FAFC";
+                    ctx.fillRect(x + MARGIN_INNER_X, y + MARGIN_INNER_Y, INNER_W, INNER_H);
+
+                    ctx.strokeStyle = "#CBD5E1";
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(x + MARGIN_INNER_X, y + MARGIN_INNER_Y, INNER_W, INNER_H);
+                    
+                    ctx.fillStyle = "#94A3B8";
+                    ctx.font = "bold 48px sans-serif";
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
+                    ctx.fillText("+", x + ITEM_W / 2, y + ITEM_H / 2 - 20);
+
+                    ctx.font = "18px sans-serif";
+                    ctx.fillText(`Slot #${index + 1}`, x + ITEM_W / 2, y + ITEM_H / 2 + 25);
+                }
+            });
+
+            // Crop Marks (Garis Potong Grid Abu-abu Tipis)
+            if (showCrop) {
+                ctx.strokeStyle = "#CBD5E1";
+                ctx.lineWidth = 2;
+
+                const gridTotalW = COLS * ITEM_W;
+                const gridTotalH = ROWS * ITEM_H;
+
+                ctx.strokeRect(START_X, START_Y, gridTotalW, gridTotalH);
+
+                for (let r = 1; r < ROWS; r++) {
+                    let lineY = START_Y + (r * ITEM_H);
+                    ctx.beginPath();
+                    ctx.moveTo(START_X, lineY);
+                    ctx.lineTo(START_X + gridTotalW, lineY);
+                    ctx.stroke();
+                }
+
+                for (let c = 1; c < COLS; c++) {
+                    let lineX = START_X + (c * ITEM_W);
+                    ctx.beginPath();
+                    ctx.moveTo(lineX, START_Y);
+                    ctx.lineTo(lineX, START_Y + gridTotalH);
+                    ctx.stroke();
+                }
+            }
+        }
+
+        function downloadHighRes() {
+            let link = document.createElement('a');
+            link.download = 'polaroid-sheet-32x48cm-300dpi.jpg';
+            link.href = canvas.toDataURL('image/jpeg', 0.95);
+            link.click();
+        }
+    </script>
+</body>
+</html>
